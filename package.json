@@ -1,10 +1,10 @@
 {
-  "name": "@codemirror/lang-EXAMPLE",
+  "name": "codemirror-foobar2000",
   "version": "0.1.0",
-  "description": "EXAMPLE language support for CodeMirror",
+  "description": "Foobar2000 query language support",
   "scripts": {
     "test": "mocha test/test.js",
-    "prepare": "rollup -c"
+    "prepare": "lezer-generator src/foobar2000.grammar -o src/parser && rollup -c"
   },
   "type": "module",
   "main": "dist/index.cjs",

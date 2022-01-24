@@ -1,0 +1,61 @@
+@precedence { single @left, binary @left, comp @left }
+
+@top Program { statement | TitleFormatting+ }
+
+@skip { space | Comment | newlineEmpty }
+
+Comparison {
+    "NOT"? (FunctionExpression | String | Number | MetadataField) !comp Comparator (String | Number | MetadataField | FunctionExpression | PlainText)?
+}
+
+BinaryExpression {
+   (Comparison | BinaryExpression | ParenthesizedExpression) !binary BinaryToken (Comparison | BinaryExpression | ParenthesizedExpression)
+}
+
+FunctionParameter { FunctionExpression | MetadataField | String | Number }
+FunctionExpression {
+    Function "(" FunctionParameter ("," FunctionParameter)* ")" |
+    '"' Function "(" FunctionParameter ("," FunctionParameter)* ')"'
+}
+
+ParenthesizedExpression  {
+    "NOT"? ("(" Comparison ")" | "(" BinaryExpression ")")
+}
+
+TitleFormatting {
+    (("[" (FunctionExpression | MetadataField | String | Number | newline) "]") |
+    (FunctionExpression | MetadataField | String | Number | PlainText | newline)) eof?
+}
+
+statement { (!single Comparison | BinaryExpression | ParenthesizedExpression) (newline | eof)? }
+
+@tokens {
+  MetadataField { "\"%" $[a-zA-Z_ 0-9]+ "%\"" | "%" $[a-zA-Z_ 0-9]+ "%" }
+
+  Function { "$" $[a-zA-Z_0-9]+ }
+
+  String { '"' ![$] (!["\\] | "\\" _)* '"' | "'" (!['\\] | "\\" _)* "'" }
+
+  PlainText { ($[a-zA-Z_\:,.;] | "-")+ }
+
+  Comparator { std.asciiUppercase+ }
+
+  BinaryToken { "AND" | "OR" }
+
+  Number { std.digit+ }
+
+  space { std.whitespace+ }
+
+  Comment { "//" ![\n]* }
+
+  "NOT"
+
+  "(" ")"
+  "[" "]"
+
+  @precedence { MetadataField, Function, String, Comment, BinaryToken, "NOT" Comparator, Number, PlainText }
+}
+
+@detectDelim
+
+@external tokens newlines from "./tokens" { newline, newlineEmpty, eof }

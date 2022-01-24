@@ -2,4 +2,5 @@
 package-lock.json
 /dist
 /src/*.js
+!/src/tokens.js
 /src/*.d.ts

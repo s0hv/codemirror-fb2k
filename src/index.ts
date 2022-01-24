@@ -1,30 +1,41 @@
-import {parser} from "./syntax.grammar"
+import {parser} from "./foobar2000.grammar"
 import {LRLanguage, LanguageSupport, indentNodeProp, foldNodeProp, foldInside, delimitedIndent} from "@codemirror/language"
 import {styleTags, tags as t} from "@codemirror/highlight"
 
-export const EXAMPLELanguage = LRLanguage.define({
+export const Foobar2000QueryLanguage = LRLanguage.define({
   parser: parser.configure({
     props: [
       indentNodeProp.add({
-        Application: delimitedIndent({closing: ")", align: false})
+        ParenthesizedExpression: delimitedIndent({closing: ")", align: false})
       }),
       foldNodeProp.add({
-        Application: foldInside
+        ParenthesizedExpression: foldInside
       }),
       styleTags({
-        Identifier: t.variableName,
-        Boolean: t.bool,
+        MetadataField: t.variableName,
         String: t.string,
-        LineComment: t.lineComment,
-        "( )": t.paren
+        Comparator: t.compareOperator,
+        BinaryToken: t.operatorKeyword,
+        Number: t.number,
+        Function: t.propertyName,
+        "( )": t.paren,
+        "[ ]": t.squareBracket,
+        "NOT": t.operatorKeyword,
+        Comment: t.lineComment,
+        PlainText: t.string
       })
     ]
   }),
   languageData: {
-    commentTokens: {line: ";"}
+    closeBrackets: {
+      brackets: ['(', '[', '%', '"']
+    },
+    commentTokens: {
+      line: '//'
+    }
   }
 })
 
-export function EXAMPLE() {
-  return new LanguageSupport(EXAMPLELanguage)
+export function Foobar2000Query() {
+  return new LanguageSupport(Foobar2000QueryLanguage)
 }

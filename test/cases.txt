@@ -1,41 +1,173 @@
-# Booleans
+# Single statment
 
-#t
-#f
-
-==>
-
-Program(Boolean, Boolean)
-
-# Identifiers
-
-one
-Two_Three
+"%album%" HAS "abc"
 
 ==>
 
-Program(Identifier, Identifier)
+Program(
+    Comparison(MetadataField, Comparator, String)
+)
 
-# Strings
+# Single side comparison
 
-"hello"
-"one\"\\two"
-
-==>
-
-Program(String, String)
-
-# Applications
-
-(begin
-  (when #t
-    (print (concat "hello" " " "world")))
-  (print "DONE"))
+"%album%" PRESENT
 
 ==>
 
-Program(Application(
-  Identifier,
-  Application(Identifier, Boolean, Application(
-    Identifier, Application(Identifier, String, String, String)))
-  Application(Identifier, String)))
+Program(
+    Comparison(MetadataField, Comparator)
+)
+
+# Multiple statements
+
+"%album%" HAS "abc" AND %album artist% GREATER 1
+
+==>
+
+Program(BinaryExpression(
+    Comparison(MetadataField, Comparator, String),
+    BinaryToken
+    Comparison(MetadataField, Comparator, Number)
+))
+
+# Brackets
+
+("%album%" HAS "test")
+
+==>
+
+Program(
+    ParenthesizedExpression("(", Comparison(MetadataField, Comparator, String), ")")
+)
+
+# Multiple statements with nested brackets
+
+(
+    %album% IS "test" AND NOT (
+        %artist% HAS "a" OR %artist% HAS "b")
+) AND %album% HAS "test"
+
+==>
+
+Program(
+    BinaryExpression(
+        ParenthesizedExpression("(",
+            BinaryExpression(
+                Comparison(MetadataField, Comparator, String),
+                BinaryToken,
+                ParenthesizedExpression(NOT, "(",
+                    BinaryExpression(
+                        Comparison(MetadataField, Comparator, String)
+                        BinaryToken
+                        Comparison(MetadataField, Comparator, String)
+                    ),
+                ")")
+            ),
+        ")"),
+        BinaryToken,
+        Comparison(MetadataField, Comparator, String)
+    )
+)
+
+# Functions
+
+$test("2", 1) GREATER 4
+
+==>
+
+Program(
+    Comparison(
+        FunctionExpression(Function, "(", FunctionParameter(String), FunctionParameter(Number), ")"),
+        Comparator
+        Number
+    )
+)
+
+# Nested Functions
+
+"$test(1, $a("abc"))" GREATER $abc(1)
+
+==>
+
+Program(
+    Comparison(
+        FunctionExpression(
+            Function,
+            "(",
+            FunctionParameter(Number),
+            FunctionParameter(
+                FunctionExpression(Function, "(", FunctionParameter(String), ")")
+            ),
+        ),
+        Comparator,
+        FunctionExpression(Function, "(", FunctionParameter(Number), ")")
+    )
+)
+
+# Title formatting
+
+$meta("title")
+
+==>
+
+Program(
+    TitleFormatting(
+        FunctionExpression(Function, "(", FunctionParameter(String), ")")
+    )
+)
+
+# Single quotes
+
+'This is a special string ( ) , [ ] $ %'
+
+==>
+
+Program(TitleFormatting(String))
+
+# Multiple functions and strings
+
+"Test" $meta("title")":"
+[%album%]
+
+==>
+
+Program(
+    TitleFormatting(String),
+    TitleFormatting( FunctionExpression(Function, "(", FunctionParameter(String)) ),
+    TitleFormatting(String),
+    TitleFormatting("[", MetadataField, "]")
+)
+
+# Plain text without quotes
+
+normal text without quotes
+and with newlines
+
+==>
+
+Program(
+    TitleFormatting(PlainText), TitleFormatting(PlainText), TitleFormatting(PlainText), TitleFormatting(PlainText),
+    TitleFormatting(PlainText), TitleFormatting(PlainText), TitleFormatting(PlainText),
+)
+
+# Plain text with numbers (Not working ideally atm)
+
+th1s is mix3d
+
+==>
+
+Program(
+    TitleFormatting(PlainText), TitleFormatting(Number), TitleFormatting(PlainText),
+    TitleFormatting(PlainText),
+    TitleFormatting(PlainText), TitleFormatting(Number), TitleFormatting(PlainText),
+)
+
+# Plain text in query
+
+%genre% HAS Rock
+
+==>
+
+Program(
+    Comparison(MetadataField, Comparator, PlainText)
+)
