@@ -1,6 +1,6 @@
 {
   "name": "codemirror-foobar2000",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Foobar2000 query language support",
   "scripts": {
     "test": "mocha test/test.js",
