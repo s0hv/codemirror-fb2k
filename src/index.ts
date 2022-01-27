@@ -17,7 +17,7 @@ export const Foobar2000QueryLanguage = LRLanguage.define({
         Comparator: t.compareOperator,
         BinaryToken: t.operatorKeyword,
         Number: t.number,
-        Function: t.propertyName,
+        Function: t.function(t.variableName),
         "( )": t.paren,
         "[ ]": t.squareBracket,
         "NOT": t.operatorKeyword,
