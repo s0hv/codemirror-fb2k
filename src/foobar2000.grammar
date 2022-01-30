@@ -12,7 +12,11 @@ BinaryExpression {
    (Comparison | BinaryExpression | ParenthesizedExpression) !binary BinaryToken (Comparison | BinaryExpression | ParenthesizedExpression)
 }
 
-FunctionParameter { FunctionExpression | MetadataField | String | Number }
+ParamType { FunctionExpression | MetadataField | String | Number | PlainText }
+FunctionParameter {
+    ParamType |
+    "[" ParamType+ "]"
+}
 FunctionExpression {
     Function "(" FunctionParameter ("," FunctionParameter)* ")" |
     '"' Function "(" FunctionParameter ("," FunctionParameter)* ')"'
@@ -36,13 +40,13 @@ statement { (!single Comparison | BinaryExpression | ParenthesizedExpression) (n
 
   String { '"' ![$] (!["\\] | "\\" _)* '"' | "'" (!['\\] | "\\" _)* "'" }
 
-  PlainText { ($[a-zA-Z_\:,.;] | "-")+ }
+  PlainText { $[%&*-Za-z]+ }
 
   Comparator { std.asciiUppercase+ }
 
   BinaryToken { "AND" | "OR" }
 
-  Number { std.digit+ }
+  Number { $[0-9]+ }
 
   space { std.whitespace+ }
 
