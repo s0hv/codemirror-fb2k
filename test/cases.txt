@@ -198,3 +198,16 @@ Program(
         )
     )
 )
+
+# PlainText test
+
+1 abc 2
+
+==>
+
+Program(
+    TitleFormatting(Number),
+    TitleFormatting(PlainText),
+    TitleFormatting(Number),
+)
+
